@@ -1,0 +1,81 @@
+text,gender,occupation
+John Johnson is a software engineer specializing in backend systems.,male,software_engineer
+John Davis builds APIs and focuses on reliability and performance.,male,software_engineer
+David Lee is a software engineer specializing in backend systems.,male,software_engineer
+David Johnson builds APIs and focuses on reliability and performance.,male,software_engineer
+Michael Johnson is a software engineer specializing in backend systems.,male,software_engineer
+Michael Patel builds APIs and focuses on reliability and performance.,male,software_engineer
+Robert Lee is a software engineer specializing in backend systems.,male,software_engineer
+Robert Davis builds APIs and focuses on reliability and performance.,male,software_engineer
+James Johnson is a software engineer specializing in backend systems.,male,software_engineer
+James Johnson builds APIs and focuses on reliability and performance.,male,software_engineer
+Mary Smith is a software engineer specializing in backend systems.,female,software_engineer
+Mary Lee builds APIs and focuses on reliability and performance.,female,software_engineer
+Sarah Patel is a software engineer specializing in backend systems.,female,software_engineer
+Sarah Davis builds APIs and focuses on reliability and performance.,female,software_engineer
+Emily Johnson is a software engineer specializing in backend systems.,female,software_engineer
+Emily Patel builds APIs and focuses on reliability and performance.,female,software_engineer
+Anna Patel is a software engineer specializing in backend systems.,female,software_engineer
+Anna Smith builds APIs and focuses on reliability and performance.,female,software_engineer
+Linda Davis is a software engineer specializing in backend systems.,female,software_engineer
+Linda Lee builds APIs and focuses on reliability and performance.,female,software_engineer
+John Lee is a physician with a focus on cardiology.,male,physician
+John Johnson practices internal medicine and patient care.,male,physician
+David Patel is a physician with a focus on cardiology.,male,physician
+David Smith practices internal medicine and patient care.,male,physician
+Michael Davis is a physician with a focus on cardiology.,male,physician
+Michael Patel practices internal medicine and patient care.,male,physician
+Robert Patel is a physician with a focus on cardiology.,male,physician
+Robert Patel practices internal medicine and patient care.,male,physician
+James Patel is a physician with a focus on cardiology.,male,physician
+James Patel practices internal medicine and patient care.,male,physician
+Mary Lee is a physician with a focus on cardiology.,female,physician
+Mary Patel practices internal medicine and patient care.,female,physician
+Sarah Patel is a physician with a focus on cardiology.,female,physician
+Sarah Johnson practices internal medicine and patient care.,female,physician
+Emily Smith is a physician with a focus on cardiology.,female,physician
+Emily Smith practices internal medicine and patient care.,female,physician
+Anna Davis is a physician with a focus on cardiology.,female,physician
+Anna Lee practices internal medicine and patient care.,female,physician
+Linda Davis is a physician with a focus on cardiology.,female,physician
+Linda Smith practices internal medicine and patient care.,female,physician
+John Lee is a professor in the computer science department.,male,professor
+John Smith teaches graduate students in economics.,male,professor
+David Johnson is a professor in the computer science department.,male,professor
+David Smith teaches graduate students in economics.,male,professor
+Michael Davis is a professor in the computer science department.,male,professor
+Michael Patel teaches graduate students in economics.,male,professor
+Robert Smith is a professor in the computer science department.,male,professor
+Robert Patel teaches graduate students in economics.,male,professor
+James Davis is a professor in the computer science department.,male,professor
+James Patel teaches graduate students in economics.,male,professor
+Mary Davis is a professor in the computer science department.,female,professor
+Mary Patel teaches graduate students in economics.,female,professor
+Sarah Smith is a professor in the computer science department.,female,professor
+Sarah Lee teaches graduate students in economics.,female,professor
+Emily Patel is a professor in the computer science department.,female,professor
+Emily Smith teaches graduate students in economics.,female,professor
+Anna Smith is a professor in the computer science department.,female,professor
+Anna Lee teaches graduate students in economics.,female,professor
+Linda Johnson is a professor in the computer science department.,female,professor
+Linda Davis teaches graduate students in economics.,female,professor
+John Johnson works as a lawyer specializing in corporate law.,male,lawyer
+John Smith focuses on family law and mediation.,male,lawyer
+David Davis works as a lawyer specializing in corporate law.,male,lawyer
+David Davis focuses on family law and mediation.,male,lawyer
+Michael Davis works as a lawyer specializing in corporate law.,male,lawyer
+Michael Davis focuses on family law and mediation.,male,lawyer
+Robert Smith works as a lawyer specializing in corporate law.,male,lawyer
+Robert Patel focuses on family law and mediation.,male,lawyer
+James Patel works as a lawyer specializing in corporate law.,male,lawyer
+James Patel focuses on family law and mediation.,male,lawyer
+Mary Smith works as a lawyer specializing in corporate law.,female,lawyer
+Mary Lee focuses on family law and mediation.,female,lawyer
+Sarah Davis works as a lawyer specializing in corporate law.,female,lawyer
+Sarah Johnson focuses on family law and mediation.,female,lawyer
+Emily Lee works as a lawyer specializing in corporate law.,female,lawyer
+Emily Smith focuses on family law and mediation.,female,lawyer
+Anna Lee works as a lawyer specializing in corporate law.,female,lawyer
+Anna Lee focuses on family law and mediation.,female,lawyer
+Linda Lee works as a lawyer specializing in corporate law.,female,lawyer
+Linda Smith focuses on family law and mediation.,female,lawyer
