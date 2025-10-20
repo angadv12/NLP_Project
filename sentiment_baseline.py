@@ -1,0 +1,133 @@
+import os, time
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+os.environ.setdefault("OMP_NUM_THREADS", "4")
+os.environ.setdefault("MKL_NUM_THREADS", "4")
+
+import torch, numpy as np
+from torch.utils.data import DataLoader, TensorDataset
+from datasets import load_dataset
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from sklearn.metrics import accuracy_score, f1_score
+from torch.optim import AdamW  
+
+def main():
+    MODEL_NAME = "bert-base-uncased"
+    EPOCHS = 1
+    BATCH_TR = 32            
+    BATCH_EV = 64
+    MAXLEN = 96
+    PRINT_EVERY = 50
+    SAVE_DIR = "out/sentiment_baseline/model"
+    SEED = 99
+    TRAIN_N = None          
+    UNFREEZE_LAST_LAYER = False 
+    HEAD_LR = 1e-3          
+    ENC_LR = 2e-5            
+
+    torch.manual_seed(SEED); np.random.seed(SEED)
+
+    if torch.backends.mps.is_available():
+        DEV = "mps"
+        torch.set_float32_matmul_precision("medium")
+    elif torch.cuda.is_available():
+        DEV = "cuda"
+    else:
+        DEV = "cpu"
+
+    print("Device:", DEV)
+        
+    # 1) data
+    sst = load_dataset("glue", "sst2")
+    if TRAIN_N is not None:
+        sst["train"] = sst["train"].select(range(min(TRAIN_N, len(sst["train"]))))
+    print("Sizes -> train:", len(sst["train"]), "val:", len(sst["validation"]))
+
+    tok = AutoTokenizer.from_pretrained(MODEL_NAME)
+
+    def enc(texts):
+        e = tok(texts, truncation=True, padding="max_length", max_length=MAXLEN, return_tensors="pt",)
+        return e["input_ids"], e["attention_mask"]
+
+    def make_loader(split, bs, shuffle=False):
+        sentences = []
+        labels = []
+        for example in sst[split]:
+            sentence = example["sentence"]
+            label = example["label"]
+            sentences.append(sentence)
+            labels.append(label)
+        X_ids, X_mask = enc(sentences)
+        y = torch.tensor(labels, dtype=torch.long)
+        ds = TensorDataset(X_ids, X_mask, y)
+        return DataLoader(ds, batch_size=bs, shuffle=shuffle, num_workers=0, pin_memory=False)
+
+    dl_tr = make_loader("train", BATCH_TR, True)
+    dl_va = make_loader("validation", BATCH_EV, False)
+    print("Batches -> train:", len(dl_tr), "val:", len(dl_va))
+
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, num_labels=2).to(DEV)
+    base = getattr(model, "bert", None) or getattr(model, "base_model", None)
+    if base is not None:
+        for p in base.parameters():
+            p.requires_grad = False
+        print("Head-only training (encoder frozen)")
+
+    enc_params = []
+    if UNFREEZE_LAST_LAYER:
+        for name, p in model.named_parameters():
+            if name.startswith("bert.encoder.layer.11."):
+                p.requires_grad = True
+                enc_params.append(p)
+        print("Unfreezing last encoder block (layer 11)")
+
+    param_groups = []
+    if enc_params:
+        param_groups.append({"params": enc_params, "lr": ENC_LR, "weight_decay": 0.01})
+    param_groups.append({"params": model.classifier.parameters(), "lr": HEAD_LR, "weight_decay": 0.0})
+    opt = AdamW(param_groups)
+
+    def eval_loader(loader):
+        model.eval()
+        ys, ps = [], []
+        with torch.inference_mode():
+            for ids, mask, y in loader:
+                ids = ids.to(DEV)
+                mask = mask.to(DEV)
+                y = y.to(DEV)
+                logits = model(input_ids=ids, attention_mask=mask).logits
+                ps.append(logits.argmax(-1).cpu().numpy())
+                ys.append(y.cpu().numpy())
+        ys = np.concatenate(ys)
+        ps = np.concatenate(ps)
+        return {"accuracy": accuracy_score(ys, ps), "f1_macro": f1_score(ys, ps, average="macro")}
+
+    best_acc = -1.0
+    for ep in range(1, EPOCHS + 1):
+        model.train()
+        t0 = time.time()
+        for step, (ids, mask, y) in enumerate(dl_tr, 1):
+            ids = ids.to(DEV)
+            mask = mask.to(DEV)
+            y = y.to(DEV)
+            opt.zero_grad(set_to_none=True)
+            out = model(input_ids=ids, attention_mask=mask, labels=y)
+            out.loss.backward()
+            opt.step()
+            if step % PRINT_EVERY == 0 or step == 1:
+                print(f"[ep{ep}] step {step}/{len(dl_tr)}  loss={out.loss.item():.4f}")
+        print(f"[ep{ep}] epoch time: {time.time() - t0:.1f}s")
+
+        val = eval_loader(dl_va)
+        print(f"[ep{ep}] SST-2 dev:", val)
+
+        if val["accuracy"] >= best_acc:
+            best_acc = val["accuracy"]
+            os.makedirs(SAVE_DIR, exist_ok=True)
+            model.save_pretrained(SAVE_DIR)
+            tok.save_pretrained(SAVE_DIR)
+            print("Saved best →", SAVE_DIR)
+
+    print("Best SST-2 dev acc:", round(best_acc, 4))
+
+if __name__ == "__main__":
+    main()
