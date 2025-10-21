@@ -13,11 +13,10 @@ def batched_preds(model, tok, texts, batch=64, dev="cpu"):
         preds.extend(logits.argmax(-1).cpu().numpy().tolist())
     return np.array(preds)
 
-
 def main():
     DEV = device()
     MODEL_DIR = "out/sentiment_baseline/model"
-    EEC_PATH = "data/eec_proxy.csv"  
+    EEC_PATH = "data/eec_proxy.csv"
 
     df = pd.read_csv(EEC_PATH)
     tok = AutoTokenizer.from_pretrained(MODEL_DIR)

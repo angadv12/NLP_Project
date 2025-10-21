@@ -3,6 +3,7 @@ from datasets import Dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer
 from utils import set_seed, simple_metrics
 
+
 def to_hf(df, tok, max_len=160):
     ds = Dataset.from_pandas(df[["text", "label", "gender"]].reset_index(drop=True))
 
@@ -18,6 +19,7 @@ def to_hf(df, tok, max_len=160):
     ds = ds.remove_columns(cols_to_remove)
     ds = ds.with_format("torch")
     return ds
+
 
 def main():
     set_seed(99)
@@ -42,16 +44,19 @@ def main():
     ds_test = to_hf(test, tok)
 
     model = AutoModelForSequenceClassification.from_pretrained(MODEL, num_labels=len(occ_labels))
-
     args = TrainingArguments(
         output_dir="out/bios_baseline",
-        logging_steps=50,
+        eval_strategy="epoch",
         learning_rate=2e-5,
         per_device_train_batch_size=16,
         per_device_eval_batch_size=64,
         num_train_epochs=2,
         weight_decay=0.01,
-        seed=99
+        save_strategy="epoch",
+        load_best_model_at_end=True,
+        metric_for_best_model="accuracy",
+        greater_is_better=True,
+        seed=99,
     )
 
     trainer = Trainer(
@@ -62,10 +67,8 @@ def main():
         tokenizer=tok,
         compute_metrics=simple_metrics,
     )
-
-    print("Starting training...\n")
     trainer.train()
-    print("\nBIOS valid metrics:", trainer.evaluate())
+    print("BIOS valid metrics:", trainer.evaluate())
 
     trainer.save_model("out/bios_baseline/model")
     tok.save_pretrained("out/bios_baseline/model")
@@ -73,8 +76,9 @@ def main():
     with open("out/bios_baseline/occ_labels.txt", "w") as f:
         for o in occ_labels:
             f.write(o + "\n")
+    print("Saved to out/bios_baseline/model and cached test at out/bios_baseline/test_cache.csv")
 
-    print("Saved model and test cache to: out/bios_baseline/model\n")
 
 if __name__ == "__main__":
     main()
+

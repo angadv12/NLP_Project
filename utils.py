@@ -1,6 +1,5 @@
 import os, random, numpy as np, torch
 from sklearn.metrics import accuracy_score, f1_score
-from collections import defaultdict
 
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
@@ -9,27 +8,28 @@ def set_seed(seed: int = 99):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    if torch.cuda.is_available(): 
+    if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
 
 def device():
     if torch.cuda.is_available():
-        return "cuda"  
+        return "cuda"
+    elif torch.backends.mps.is_available():
+        return "mps"
     else:
         return "cpu"
 
 
 def simple_metrics(eval_pred):
-    logits, labels = eval_pred
-    preds = logits.argmax(-1)
+    predictions, labels = eval_pred
+    preds = predictions.argmax(axis=-1)
     acc = accuracy_score(labels, preds)
     f1 = f1_score(labels, preds, average="macro")
     return {"accuracy": acc, "f1_macro": f1}
 
-
-
 def group_gap(y_true, y_pred, groups):
+    from collections import defaultdict
     buckets = defaultdict(lambda: {"y": [], "p": []})
     for yt, yp, g in zip(y_true, y_pred, groups):
         buckets[g]["y"].append(yt)

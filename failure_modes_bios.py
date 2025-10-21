@@ -20,7 +20,8 @@ def error_rates_by_group(y, yhat, g, n_labels):
     for group in sorted(set(g)):
         mask = (g == group)
         cm = confusion_matrix(y[mask], yhat[mask], labels=list(range(n_labels)))
-        fprs, fnrs = [], []
+        fprs = []
+        fnrs = []
         for c in range(n_labels):
             TP = cm[c, c]
             FN = cm[c, :].sum() - TP
@@ -28,7 +29,7 @@ def error_rates_by_group(y, yhat, g, n_labels):
             TN = cm.sum() - (TP + FN + FP)
             fpr = FP / (FP + TN + 1e-9)
             fnr = FN / (FN + TP + 1e-9)
-            fprs.append(fpr);
+            fprs.append(fpr)
             fnrs.append(fnr)
         res[group] = {
             "ACC": float((yhat[mask] == y[mask]).mean()),
@@ -42,7 +43,6 @@ def error_rates_by_group(y, yhat, g, n_labels):
         accs.append(v["ACC"])
         fprs.append(v["FPR_macro"])
         fnrs.append(v["FNR_macro"])
-
     res["gap_ACC"] = float(max(accs) - min(accs))
     res["gap_FPR"] = float(max(fprs) - min(fprs))
     res["gap_FNR"] = float(max(fnrs) - min(fnrs))
@@ -70,9 +70,10 @@ def main():
 
     test_df = pd.read_csv(TEST_CACHE)
     label_names = []
+
     with open(LABELS_TXT) as f:
-        for l in f.read().splitlines():
-            l = l.strip()
+        for line in f.read().splitlines():
+            l = line.strip()
             if l:
                 label_names.append(l)
 
@@ -90,7 +91,6 @@ def main():
     print("\nSample misclassifications (qualitative):")
     for r in fails:
         print(r)
-
 
 if __name__ == "__main__":
     main()

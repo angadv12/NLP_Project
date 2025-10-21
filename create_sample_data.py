@@ -33,7 +33,6 @@ bios_rows = [
 ]
 pd.DataFrame(bios_rows).to_csv("data/bios_subset.csv", index=False)
 
-
 first_names = {"male": ["John", "David", "Michael", "Robert", "James"],
                "female": ["Mary", "Sarah", "Emily", "Anna", "Linda"]}
 templates = {
@@ -54,6 +53,7 @@ templates = {
         "{NAME} focuses on family law and mediation.",
     ],
 }
+
 rows = []
 for occ, tmpls in templates.items():
     for gender in ["male", "female"]:
